@@ -1,19 +1,19 @@
-import { config } from 'dotenv';
-import mongoose from 'mongoose';
+import { config } from "dotenv";
+import mongoose from "mongoose";
 
-mongoose.set('strictQuery', false);
+mongoose.set("strictQuery", false);
 
 export const connectDB = async () => {
   return new Promise((resolve, reject) => {
     config();
-    const uri = process.env.COURSE_MONGO_URI || '';
+    const uri = process.env.COURSE_MONGO_URI || "";
     if (!uri) {
-      reject(new Error('MongoDB URI is not defined in Course server'));
+      reject(new Error("MongoDB URI is not defined in Course server"));
     }
     mongoose
       .connect(uri)
       .then(() => {
-        console.log('MongoDB connected in Course server');
+        console.log("MongoDB connected in Course server");
         resolve();
       })
       .catch((error) => {
@@ -25,6 +25,6 @@ export const connectDB = async () => {
 
 export const disconnectDB = async () => {
   mongoose.disconnect().then(() => {
-    console.log('MongoDB disconnected in Course server');
+    console.log("MongoDB disconnected in Course server");
   });
 };

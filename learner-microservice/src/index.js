@@ -2,6 +2,7 @@ import cookieParser from "cookie-parser";
 import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
+import learnerRoute from "./routes/learnerRoute.js";
 import { connectDB } from "../configs/DBConnect.js";
 
 config();
@@ -10,7 +11,6 @@ export const learnerService = express();
 
 learnerService.use(cookieParser());
 learnerService.use(cors());
-
 learnerService.use(express.json());
 
 const port = process.env.LEARNER_PORT;
@@ -30,3 +30,5 @@ learnerService.get("/", (req, res) => {
   console.log(`Received request to learner server from gateway`);
   res.status(200).send("Response from learner server");
 });
+
+learnerService.use("/api/learner", learnerRoute);

@@ -61,4 +61,28 @@ function logout(req, res) {
   res.send("Logged out");
 }
 
-export { login, register, logout };
+async function getLearnerById(req, res) {
+  try {
+    const userId = req.params.id;
+
+    console.log(userId);
+
+    const user = await User.findById(userId);
+
+    if (user) {
+      if (user.role.match("learner")) {
+        const { id, email, role } = user;
+        res.json({ id, email, role });
+      } else {
+        res.status(403).json({ error: "Not a valid Learner ID!" });
+      }
+    } else {
+      res.status(404).json({ error: "User Not Found!" });
+    }
+  } catch (error) {
+    console.error("Error Occurred:", error.message);
+    res.status(500).json({ error: "Internal Server Error!" });
+  }
+}
+
+export { login, register, logout, getLearnerById };

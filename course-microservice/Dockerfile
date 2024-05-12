@@ -1,6 +1,8 @@
-FROM node:20
-WORKDIR /src
+FROM node:lts-alpine as builder
+ARG NODE_ENV
+ENV NODE_ENV=production
+WORKDIR /app
 COPY package*.json ./
 RUN npm install
-CMD ["nodemon", "src/index.js"]
-EXPOSE 4003
+COPY . .
+CMD ["npm", "start"]

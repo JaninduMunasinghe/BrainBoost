@@ -1,6 +1,18 @@
 import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
+const quizSchema = new Schema({
+  question: {
+    type: String,
+    required: [true, "Quiz question is required"],
+  },
+
+  answer: {
+    type: String,
+    required: [true, "Quiz answer is required"],
+  },
+});
+
 const lectureSchema = new Schema({
   title: {
     type: String,
@@ -42,6 +54,7 @@ const courseSchema = new Schema(
       default: {},
     },
     lectures: [lectureSchema],
+    quizzes: [quizSchema],
   },
   { timestamps: true }
 );

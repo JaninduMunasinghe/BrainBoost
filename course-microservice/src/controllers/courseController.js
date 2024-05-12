@@ -4,7 +4,7 @@ import { fileSizeFormatter } from "../utils/fileUpload.js";
 import { cloudinary } from "../utils/cloudinary.js";
 
 export const createCourse = asyncHandler(async (req, res) => {
-  const { name, description, price, lectures } = req.body;
+  const { name, description, price, lectures, quizzes } = req.body;
 
   //validation
   if (!name || !description || !price) {
@@ -68,6 +68,17 @@ export const createCourse = asyncHandler(async (req, res) => {
     });
   }
 
+  //hanlde quiz upload
+  let quizData = [];
+  if (quizzes) {
+    quizData = quizzes.map((quiz) => {
+      return {
+        question: quiz.question,
+        answer: quiz.answer,
+      };
+    });
+  }
+
   //create course
   const course = await Course.create({
     name,
@@ -75,6 +86,7 @@ export const createCourse = asyncHandler(async (req, res) => {
     price,
     video: fileData,
     lectures: lectureData,
+    quizzes: quizData,
   });
 
   res.status(201).json(course);

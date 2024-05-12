@@ -10,8 +10,14 @@ const learnerSchema = new mongoose.Schema({
   },
   enrolledCourseList: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Course",
+      course: {
+        type: Schema.Types.ObjectId,
+        ref: "Course",
+      },
+      progress: {
+        type: Number,
+        default: 0,
+      },
     },
   ],
 });

@@ -35,7 +35,13 @@ export const enrolLearner = asyncHandler(async (req, res) => {
           learner = new Learner({ studentId, enrolledCourseList: [] });
         }
 
-        if (learner.enrolledCourseList.includes(course)) {
+        console.log(learner.enrolledCourseList);
+
+        const isEnrolled = learner.enrolledCourseList.some(
+          (entry) => entry._id && entry._id.toString() === courseId.toString()
+        );
+
+        if (isEnrolled) {
           return res.status(400).json({ message: "Learner Already Enrolled!" });
         }
 
@@ -81,7 +87,11 @@ export const unenrolLearner = asyncHandler(async (req, res) => {
       } else {
         let learner = await Learner.findOne({ studentId });
 
-        if (!learner.enrolledCourseList.includes(courseId)) {
+        const isEnrolled = learner.enrolledCourseList.some(
+          (entry) => entry._id && entry._id.toString() === courseId.toString()
+        );
+
+        if (!isEnrolled) {
           return res.status(400).json({ message: "Learner Not Enrolled!" });
         } else {
           learner.enrolledCourseList.pop(courseId);

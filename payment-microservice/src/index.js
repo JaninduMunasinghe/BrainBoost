@@ -3,6 +3,7 @@ import cors from "cors";
 import { config } from "dotenv";
 import express from "express";
 import { connectDB } from "../configs/DBConnect.js";
+import paymentRoutes from "./paymentRoutes.js";
 
 config();
 
@@ -14,6 +15,8 @@ paymentService.use(cors());
 paymentService.use(express.json());
 
 const port = process.env.PAYMENT_PORT;
+
+paymentService.use('/api/payments', paymentRoutes);
 
 // Start the server after connecting to the database
 connectDB()

@@ -1,0 +1,63 @@
+version: "3"
+services:
+  gateway:
+    build:
+      dockerfile: Dockerfile
+      context: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "4000:4000"
+    restart: always
+    # env_file:
+    #   - ./api-gateway/.env
+
+  auth:
+    build:
+      dockerfile: Dockerfile
+      context: ./authentication-microservice
+    container_name: auth-service
+    ports:
+      - "4001:4001"
+    restart: always
+    # env_file:
+    #   - ./authentication-microservice/.env
+
+  course:
+    build:
+      dockerfile: Dockerfile
+      context: ./course-microservice
+    container_name: course-service
+    ports:
+      - "4003:4003"
+    restart: always
+    # env_file:
+    #   - ./course-microservice/.env
+
+  learner:
+    build:
+      dockerfile: Dockerfile
+      context: ./learner-microservice
+    container_name: enrollment-service
+    ports:
+      - "4002:4002"
+    restart: always
+    # env_file:
+    #   - ./learner-microservice/.env
+
+  payment:
+    build:
+      dockerfile: Dockerfile
+      context: ./payment-microservice
+    container_name: payment-service
+    ports:
+      - "4004:4004"
+    restart: always
+    # env_file:
+    #   - ./payment-microservice/.env
+
+  # nginx-proxy:
+  #   build:
+  #     dockerfile: Dockerfile
+  #     context: ./proxy
+  #   ports:
+  #     - "80:80"

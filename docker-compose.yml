@@ -52,6 +52,15 @@ services:
     ports:
       - "4004:4004"
     restart: always
+
+  notification:
+    build:
+      dockerfile: Dockerfile
+      context: ./notification-microservice
+    container_name: notification-service
+    ports:
+      - "4005:4005"
+    restart: always
     # env_file:
     #   - ./payment-microservice/.env
 

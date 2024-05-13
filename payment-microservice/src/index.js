@@ -10,15 +10,19 @@ config();
 export const paymentService = express();
 
 paymentService.use(cookieParser());
-paymentService.use(cors());
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+};
+
+paymentService.use(cors(corsOptions));
 
 paymentService.use(express.json());
 
 const port = process.env.PAYMENT_PORT;
 
-paymentService.use('/api/payments', paymentRoutes);
+paymentService.use("/api/payments", paymentRoutes);
 
-// Start the server after connecting to the database
 connectDB()
   .then(() => {
     paymentService.listen(port, () => {

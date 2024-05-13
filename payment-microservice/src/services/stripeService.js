@@ -5,18 +5,13 @@ import stripe from "stripe";
 const stripeClient = new stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createStripeCheckoutSession = async (courseId, amount) => {
+  console.log("courseId", courseId);
   try {
     const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
         {
-          price_data: {
-            currency: "usd",
-            product_data: {
-              courseId: courseId,
-            },
-            unit_amount: amount * 100, // convert amount to cents
-          },
+          price: "price_1PG0tFFlSkzp2qr9oUmaFvNG",
           quantity: 1,
         },
       ],

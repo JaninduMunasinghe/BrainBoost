@@ -8,8 +8,6 @@ services:
     ports:
       - "4000:4000"
     restart: always
-    # env_file:
-    #   - ./api-gateway/.env
 
   auth:
     build:
@@ -19,8 +17,6 @@ services:
     ports:
       - "4001:4001"
     restart: always
-    # env_file:
-    #   - ./authentication-microservice/.env
 
   course:
     build:
@@ -30,8 +26,6 @@ services:
     ports:
       - "4003:4003"
     restart: always
-    # env_file:
-    #   - ./course-microservice/.env
 
   learner:
     build:
@@ -41,8 +35,6 @@ services:
     ports:
       - "4002:4002"
     restart: always
-    # env_file:
-    #   - ./learner-microservice/.env
 
   payment:
     build:
@@ -61,12 +53,3 @@ services:
     ports:
       - "4005:4005"
     restart: always
-    # env_file:
-    #   - ./payment-microservice/.env
-
-  # nginx-proxy:
-  #   build:
-  #     dockerfile: Dockerfile
-  #     context: ./proxy
-  #   ports:
-  #     - "80:80"

@@ -193,9 +193,11 @@ export const completeChapter = asyncHandler(async (req, res) => {
                 const progress =
                   (completedChaptersCount / totalChaptersCount) * 100;
 
-                console.log(progress);
+                const roundedProgress = Number(progress.toFixed(2));
 
-                enrolledCourse.progress = progress;
+                console.log("Hehe progress: ", roundedProgress);
+
+                enrolledCourse.progress = roundedProgress;
 
                 await learner.save();
 

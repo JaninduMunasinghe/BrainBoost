@@ -2,6 +2,7 @@ import asyncHandler from "express-async-handler";
 import { Course } from "../models/courseModel.js";
 import { fileSizeFormatter } from "../utils/fileUpload.js";
 import { cloudinary } from "../utils/cloudinary.js";
+import { createProduct } from "../utils/createProduct.js";
 
 export const createCourse = asyncHandler(async (req, res) => {
   const { name, description, price, lectures, quizzes } = req.body;
@@ -79,6 +80,9 @@ export const createCourse = asyncHandler(async (req, res) => {
     });
   }
 
+  // create product via payments ms
+  const priceId = await createProduct(name, price, description);
+
   //create course
   const course = await Course.create({
     name,
@@ -87,6 +91,7 @@ export const createCourse = asyncHandler(async (req, res) => {
     video: fileData,
     lectures: lectureData,
     quizzes: quizData,
+    priceId,
   });
 
   res.status(201).json(course);

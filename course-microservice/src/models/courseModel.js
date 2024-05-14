@@ -49,6 +49,10 @@ const courseSchema = new Schema(
       required: [true, "Course price is required"],
       trim: true,
     },
+    priceId: {
+      type: String,
+      default: "",
+    },
     video: {
       type: Object,
       default: {},

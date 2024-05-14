@@ -1,17 +1,19 @@
 import stripe from "stripe";
+import dotenv from "dotenv";
+dotenv.config();
+
 // import { sendAPIRequest } from './externalService.js';
 // import { savePayment } from './paymentService.js';
 
 const stripeClient = new stripe(process.env.STRIPE_SECRET_KEY);
 
 export const createStripeCheckoutSession = async (courseId, amount) => {
-  console.log("courseId", courseId);
   try {
     const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: [
         {
-          price: "price_1PG0tFFlSkzp2qr9oUmaFvNG",
+          price: courseId,
           quantity: 1,
         },
       ],
@@ -45,5 +47,25 @@ export const handleStripeWebhookEvent = async (event) => {
     }
   } catch (error) {
     throw new Error("Error handling webhook event");
+  }
+};
+
+// create a product service
+export const handleCreateProduct = async (name, description, price) => {
+  try {
+    const product = await stripeClient.products.create({
+      name,
+      description,
+    });
+
+    const priceObj = await stripeClient.prices.create({
+      product: product.id,
+      unit_amount: price * 100,
+      currency: "usd",
+    });
+
+    return { product, price: priceObj };
+  } catch (error) {
+    throw new Error("Failed to create product");
   }
 };

@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import axios from "axios";
 import { Learner } from "../models/learnerModel.js";
+import { getAPIUrl } from "../utils/getAPIUrl.js";
 
 export const enrolLearner = asyncHandler(async (req, res) => {
   const authAPI = process.env.AUTH_API;
@@ -10,16 +11,18 @@ export const enrolLearner = asyncHandler(async (req, res) => {
   const courseId = req.params.cid;
 
   try {
-    const userResponse = await axios.get(`${authAPI}/user/${studentId}`);
+    const userResponse = await axios.get(
+      `http://${getAPIUrl()}:${process.env.AUTH_PORT}/user/${studentId}`
+    );
     const user = userResponse.data;
-
-    console.log(user);
 
     if (!user) {
       return res.status(404).json({ message: "User Not Found with given ID!" });
     } else {
       const courseResponse = await axios.get(
-        `${courseAPI}/api/course/${courseId}`
+        `http://${getAPIUrl()}:${
+          process.env.COURSE_PORT
+        }/api/course/${courseId}`
       );
 
       const course = courseResponse.data;
@@ -70,14 +73,18 @@ export const unenrolLearner = asyncHandler(async (req, res) => {
   console.log(studentId);
 
   try {
-    const userResponse = await axios.get(`${authAPI}/user/${studentId}`);
+    const userResponse = await axios.get(
+      `http://${getAPIUrl()}:${process.env.AUTH_PORT}/user/${studentId}`
+    );
     const user = userResponse.data;
 
     if (!user) {
       return res.status(404).json({ message: "User Not Found with given ID!" });
     } else {
       const courseResponse = await axios.get(
-        `${courseAPI}/api/course/${courseId}`
+        `http://${getAPIUrl()}:${
+          process.env.COURSE_PORT
+        }/api/course/${courseId}`
       );
 
       const course = courseResponse.data;
@@ -119,10 +126,10 @@ export const completeChapter = asyncHandler(async (req, res) => {
 
   const { studentId, courseId, lectureId } = req.body;
 
-  console.log(studentId, courseId, lectureId);
-
   try {
-    const userResponse = await axios.get(`${authAPI}/user/${studentId}`);
+    const userResponse = await axios.get(
+      `http://${getAPIUrl()}:${process.env.AUTH_PORT}/user/${studentId}`
+    );
     const user = userResponse.data;
 
     //check if student exists
@@ -131,7 +138,9 @@ export const completeChapter = asyncHandler(async (req, res) => {
     } else {
       //check if course exists
       const courseResponse = await axios.get(
-        `${courseAPI}/api/course/${courseId}`
+        `http://${getAPIUrl()}:${
+          process.env.COURSE_PORT
+        }/api/course/${courseId}`
       );
 
       const course = courseResponse.data;
@@ -161,8 +170,6 @@ export const completeChapter = asyncHandler(async (req, res) => {
           if (!isEnrolled) {
             return res.status(400).json({ message: "Learner Not Enrolled!" });
           } else {
-            console.log(isEnrolled);
-
             const isChapterCompleted = learner.enrolledCourseList.some(
               (entry) =>
                 entry.completedChapters.some(
@@ -175,19 +182,13 @@ export const completeChapter = asyncHandler(async (req, res) => {
                 .status(400)
                 .json({ message: "Lecture Already Completed!" });
             } else {
-              console.log("chapter completion: ", isChapterCompleted);
-
               const enrolledCourse = learner.enrolledCourseList.find(
                 (course) => course._id.toString() === courseId.toString()
               );
 
-              console.log("enrolled course: ", enrolledCourse);
-
               if (enrolledCourse) {
                 enrolledCourse.completedChapters.push(lectureId);
                 await learner.save();
-
-                console.log(enrolledCourse.completedChapters);
 
                 const totalChaptersCount = course.lectures.length;
                 const completedChaptersCount =
@@ -196,8 +197,6 @@ export const completeChapter = asyncHandler(async (req, res) => {
                   (completedChaptersCount / totalChaptersCount) * 100;
 
                 const roundedProgress = Number(progress.toFixed(2));
-
-                console.log("Hehe progress: ", roundedProgress);
 
                 enrolledCourse.progress = roundedProgress;
 
@@ -221,16 +220,17 @@ export const completeChapter = asyncHandler(async (req, res) => {
 });
 
 export const getProgress = asyncHandler(async (req, res) => {
-  const authAPI = process.env.AUTH_API;
-  const courseAPI = process.env.COURSE_API;
-
   const studentId = req.params.sid;
   const courseId = req.params.cid;
 
-  console.log(studentId, courseId);
+  console.log(
+    `http://${getAPIUrl()}:${process.env.AUTH_PORT}/user/${studentId}`
+  );
 
   try {
-    const userResponse = await axios.get(`${authAPI}/user/${studentId}`);
+    const userResponse = await axios.get(
+      `http://${getAPIUrl()}:${process.env.AUTH_PORT}/user/${studentId}`
+    );
     const user = userResponse.data;
 
     //check if student exists
@@ -239,7 +239,9 @@ export const getProgress = asyncHandler(async (req, res) => {
     } else {
       //check if course exists
       const courseResponse = await axios.get(
-        `${courseAPI}/api/course/${courseId}`
+        `http://${getAPIUrl()}:${
+          process.env.COURSE_PORT
+        }/api/course/${courseId}`
       );
 
       const course = courseResponse.data;
@@ -259,13 +261,9 @@ export const getProgress = asyncHandler(async (req, res) => {
         if (!isEnrolled) {
           return res.status(400).json({ message: "Learner Not Enrolled!" });
         } else {
-          console.log(isEnrolled);
-
           const enrolledCourse = learner.enrolledCourseList.find(
             (entry) => entry._id.toString() === courseId.toString()
           );
-
-          console.log("enrolled course: ", enrolledCourse);
 
           if (enrolledCourse) {
             return res.status(200).json({ progress: enrolledCourse.progress });

@@ -48,13 +48,28 @@ async function register(req, res) {
     const { name, email, password, NIC, role } = req.body;
     const user = new User({ name, email, password, NIC, role });
     await user.save();
+    const token = generateToken(res, user._id, user.role);
     res.status(201).json({
       message: "User created",
       user: { id: user._id, email: user.email, role: user.role },
+      token,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+
+    if (error.errors) {
+      const fields = Object.keys(error.errors).join(", ");
+      return res.status(400).json({ message: `Please provide ${fields}` });
+    }
+
+    if (error.code === 11000 && error.keyPattern && error.keyValue) {
+      const fieldName = Object.keys(error.keyPattern)[0];
+      const duplicatedValue = error.keyValue[fieldName];
+      const errorMessage = `The ${fieldName} '${duplicatedValue}' is already in use. Please choose a different one.`;
+      return res.status(400).json({ message: errorMessage });
+    }
+
+    res.status(500).json({ message: "Internal Server Error666" });
   }
 }
 

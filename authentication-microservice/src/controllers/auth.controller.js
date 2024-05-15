@@ -49,10 +49,10 @@ async function register(req, res) {
     const user = new User({ name, email, password, NIC, role });
     await user.save();
     const token = generateToken(res, user._id, user.role);
+
     res.status(201).json({
       message: "User created",
       user: { id: user._id, email: user.email, role: user.role },
-      token,
     });
   } catch (error) {
     console.error(error);

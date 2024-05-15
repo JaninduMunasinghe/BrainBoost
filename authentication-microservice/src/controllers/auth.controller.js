@@ -48,7 +48,10 @@ async function register(req, res) {
     const { name, email, password, NIC, role } = req.body;
     const user = new User({ name, email, password, NIC, role });
     await user.save();
-    res.status(201).json({ message: "User created" });
+    res.status(201).json({
+      message: "User created",
+      user: { id: user._id, email: user.email, role: user.role },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: error.message });

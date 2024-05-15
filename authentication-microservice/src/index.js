@@ -1,15 +1,15 @@
 import { config } from "dotenv";
 import express from "express";
 import { connectDB } from "../configs/DBConnect.js";
-import {
-  getLearnerById,
-  login,
-  register,
-} from "./controllers/auth.controller.js";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import authRoute from "./routes/authRoute.js";
 
 config();
 
 export const authService = express();
+authService.use(cookieParser());
+authService.use(cors());
 authService.use(express.json());
 
 const port = process.env.AUTH_PORT;
@@ -30,6 +30,4 @@ authService.post("/test", (req, res) => {
   res.status(200).send("Response from auth server");
 });
 
-authService.post("/login", login);
-authService.post("/register", register);
-authService.get("/user/:id", getLearnerById);
+authService.use("/api/auth", authRoute);

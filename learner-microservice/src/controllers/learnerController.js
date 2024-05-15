@@ -67,6 +67,8 @@ export const unenrolLearner = asyncHandler(async (req, res) => {
   const studentId = req.params.sid;
   const courseId = req.params.cid;
 
+  console.log(studentId);
+
   try {
     const userResponse = await axios.get(`${authAPI}/user/${studentId}`);
     const user = userResponse.data;

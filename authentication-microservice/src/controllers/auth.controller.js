@@ -33,7 +33,7 @@ async function login(req, res) {
     }
     const isMatch = await user.checkPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid Credentials" });
+      return res.status(401).json({ message: "Invalid Password" });
     }
     const token = generateToken(res, user._id, user.role);
     res.send({ token, role: user.role });
@@ -48,10 +48,29 @@ async function register(req, res) {
     const { name, email, password, NIC, role } = req.body;
     const user = new User({ name, email, password, NIC, role });
     await user.save();
-    res.status(201).json({ message: "User created" });
+    const token = generateToken(res, user._id, user.role);
+
+    res.status(201).json({
+      message: "User created",
+      user: { id: user._id, email: user.email, role: user.role },
+      token,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+
+    if (error.errors) {
+      const fields = Object.keys(error.errors).join(", ");
+      return res.status(400).json({ message: `Please provide ${fields}` });
+    }
+
+    if (error.code === 11000 && error.keyPattern && error.keyValue) {
+      const fieldName = Object.keys(error.keyPattern)[0];
+      const duplicatedValue = error.keyValue[fieldName];
+      const errorMessage = `The ${fieldName} '${duplicatedValue}' is already in use. Please choose a different one.`;
+      return res.status(400).json({ message: errorMessage });
+    }
+
+    res.status(500).json({ message: "Internal Server Error666" });
   }
 }
 
@@ -85,4 +104,32 @@ async function getLearnerById(req, res) {
   }
 }
 
-export { login, register, logout, getLearnerById };
+function isAuthenticated(req, res, next) {
+  const token = req.cookies.token;
+
+  console.log("Token:", token);
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const jwtSecret = process.env.JWT_SECRET;
+  console.log("JWT Secret:", jwtSecret);
+
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    if (err) {
+      console.error("JWT Verification Error:", err);
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    console.log("Decoded Payload:", decoded);
+
+    req.userId = decoded.userId;
+    req.role = decoded.role;
+
+    //send user role and authenticated status
+    res.status(200).json({ isAuthenticated: true, role: decoded.role });
+  });
+}
+
+export { login, register, logout, isAuthenticated, getLearnerById };

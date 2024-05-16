@@ -1,6 +1,6 @@
 FROM node:lts-alpine as builder
 ARG NODE_ENV
-ENV NODE_ENV=development
+ENV NODE_ENV=production
 WORKDIR /app
 COPY package*.json ./
 RUN npm install

@@ -1,6 +1,6 @@
 // import axios
 import axios from "axios";
-import { getAPIUrl } from "./utils/getAPIUrl";
+import { getAPIUrl } from "./getAPIUrl.js";
 
 // function that makes an api call to payments microservice to create a product
 export async function createProduct(name, price, description) {

@@ -1,5 +1,6 @@
 import stripe from "stripe";
 import dotenv from "dotenv";
+import { getAPIUrl } from "../utils/getAPIUrl.js";
 dotenv.config();
 
 // import { sendAPIRequest } from './externalService.js';
@@ -11,6 +12,10 @@ export const createStripeCheckoutSession = async (courseId, amount) => {
   try {
     const session = await stripeClient.checkout.sessions.create({
       payment_method_types: ["card"],
+      metadata: {
+        course_id: "courseId",
+        amount: "amount",
+      },
       line_items: [
         {
           price: courseId,
@@ -33,7 +38,7 @@ export const handleStripeWebhookEvent = async (event) => {
     switch (event.type) {
       case "payment_intent.succeeded":
         const paymentIntent = event.data.object;
-        // await sendAPIRequest(); // update enrolment
+        // update enrolment
         // await savePayment(event); // save payment details to db
         console.log("Payment succeeded", event);
 
@@ -69,3 +74,26 @@ export const handleCreateProduct = async (name, description, price) => {
     throw new Error("Failed to create product");
   }
 };
+
+// create enrolment
+const handleCreateEnrolment = async (courseId, learnerId) => {
+  try {
+    const response = await fetch(
+      `http://${getAPIUrl()}:${
+        process.env.LEARNER_PORT
+      }/api/learner/${learnerId}/course/${courseId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    return response.json();
+  } catch (error) {
+    throw new Error("Failed to create enrolment");
+  }
+};
+
+// http://localhost:4002/api/learner/663af92d9d88c926ab1ccd05/course/${courseId}

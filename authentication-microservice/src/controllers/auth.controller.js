@@ -127,7 +127,8 @@ function isAuthenticated(req, res, next) {
     req.userId = decoded.userId;
     req.role = decoded.role;
 
-    next();
+    //send user role and authenticated status
+    res.status(200).json({ isAuthenticated: true, role: decoded.role });
   });
 }
 

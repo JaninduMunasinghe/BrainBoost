@@ -126,6 +126,7 @@ function isAuthenticated(req, res, next) {
 
     req.userId = decoded.userId;
     req.role = decoded.role;
+
     next();
   });
 }

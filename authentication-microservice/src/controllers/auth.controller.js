@@ -33,7 +33,7 @@ async function login(req, res) {
     }
     const isMatch = await user.checkPassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: "Invalid Credentials" });
+      return res.status(401).json({ message: "Invalid Password" });
     }
     const token = generateToken(res, user._id, user.role);
     res.send({ token, role: user.role });

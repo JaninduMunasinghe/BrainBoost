@@ -9,7 +9,13 @@ config();
 
 export const authService = express();
 authService.use(cookieParser());
-authService.use(cors());
+// authService.use(cors());
+authService.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 authService.use(express.json());
 
 const port = process.env.AUTH_PORT;

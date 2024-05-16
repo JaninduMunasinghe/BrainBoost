@@ -53,6 +53,7 @@ async function register(req, res) {
     res.status(201).json({
       message: "User created",
       user: { id: user._id, email: user.email, role: user.role },
+      token,
     });
   } catch (error) {
     console.error(error);
@@ -103,4 +104,30 @@ async function getLearnerById(req, res) {
   }
 }
 
-export { login, register, logout, getLearnerById };
+function isAuthenticated(req, res, next) {
+  const token = req.cookies.token;
+
+  console.log("Token:", token);
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized" });
+  }
+
+  const jwtSecret = process.env.JWT_SECRET;
+  console.log("JWT Secret:", jwtSecret);
+
+  jwt.verify(token, jwtSecret, (err, decoded) => {
+    if (err) {
+      console.error("JWT Verification Error:", err);
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    console.log("Decoded Payload:", decoded);
+
+    req.userId = decoded.userId;
+    req.role = decoded.role;
+    next();
+  });
+}
+
+export { login, register, logout, isAuthenticated, getLearnerById };

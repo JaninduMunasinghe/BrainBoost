@@ -223,10 +223,6 @@ export const getProgress = asyncHandler(async (req, res) => {
   const studentId = req.params.sid;
   const courseId = req.params.cid;
 
-  console.log(
-    `http://${getAPIUrl()}:${process.env.AUTH_PORT}/user/${studentId}`
-  );
-
   try {
     const userResponse = await axios.get(
       `http://${getAPIUrl()}:${process.env.AUTH_PORT}/user/${studentId}`
